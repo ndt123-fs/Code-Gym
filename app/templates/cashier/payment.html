@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Thanh toán</h2>
+            <a href="{{ url_for('cashier.history') }}" class="btn btn-outline-primary">Lịch sử thanh toán</a>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="member_id" class="form-label">Hội viên</label>
+                        <select class="form-select" id="member_id" name="member_id" required>
+                            <option value="">-- Chọn hội viên --</option>
+                            {% for member in members %}
+                                <option value="{{ member.id }}">{{ member.full_name }} ({{ member.email }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="package_id" class="form-label">Gói tập</label>
+                        <select class="form-select" id="package_id" name="package_id" required>
+                            <option value="">-- Chọn gói tập --</option>
+                            {% for package in packages %}
+                                <option value="{{ package.id }}">{{ package.name }} - {{ package.duration_months }} tháng - {{ package.price|format_vnd }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

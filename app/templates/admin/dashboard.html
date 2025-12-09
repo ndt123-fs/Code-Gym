@@ -1,0 +1,149 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Tổng quan</h2>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">Hội viên đang hoạt động</h5>
+                <h2 id="activeMemberCount" class="display-4">-</h2>
+                <p class="card-text">Hội viên còn hạn tập</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">Tổng nhân viên</h5>
+                <h2 class="display-4">{{ user_count }}</h2>
+                <p class="card-text">Nhân viên trong hệ thống</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">Gói tập</h5>
+                <h2 class="display-4">{{ package_count }}</h2>
+                <p class="card-text">Gói tập đang cung cấp</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+                <h5 class="card-title">Bài tập</h5>
+                <h2 class="display-4">{{ exercise_count }}</h2>
+                <p class="card-text">Bài tập trong danh mục</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Hội viên theo gói tập</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="membersPerPackageChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Doanh thu theo tháng</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Fetch active member count
+        fetch('{{ url_for('admin.active_members') }}')
+            .then(response => response.json())
+            .then(payload => {
+                document.getElementById('activeMemberCount').textContent = payload.count;
+            })
+            .catch(() => {
+                document.getElementById('activeMemberCount').textContent = 'Lỗi';
+            });
+
+        // Fetch members per package data
+        fetch('{{ url_for('admin.members_per_package') }}')
+            .then(response => response.json())
+            .then(payload => {
+                const ctx = document.getElementById('membersPerPackageChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: payload.labels,
+                        datasets: [{
+                            data: payload.data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)',
+                                'rgba(75, 192, 192, 0.6)',
+                                'rgba(153, 102, 255, 0.6)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            })
+            .catch(() => {
+                document.getElementById('membersPerPackageChart').parentElement.innerHTML = '<p class="text-muted">Không thể tải dữ liệu</p>';
+            });
+
+        // Fetch revenue data
+        fetch('{{ url_for('admin.revenue_data') }}')
+            .then(response => response.json())
+            .then(payload => {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: payload.labels,
+                        datasets: [{
+                            label: 'Doanh thu',
+                            data: payload.data,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: (value) => value.toLocaleString('vi-VN') + ' đ'
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(() => {
+                document.getElementById('revenueChart').parentElement.innerHTML = '<p class="text-muted">Không thể tải dữ liệu</p>';
+            });
+    });
+</script>
+{% endblock %}

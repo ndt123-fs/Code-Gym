@@ -1,0 +1,50 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Chỉnh sửa nhân viên</h2>
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control" id="password" name="password" minlength="6">
+                        <div class="form-text">Để trống nếu không muốn thay đổi mật khẩu. Mật khẩu mới phải có ít nhất 6 ký tự.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Vai trò <span class="text-danger">*</span></label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Quản trị viên</option>
+                            <option value="receptionist" {% if user.role == 'receptionist' %}selected{% endif %}>Lễ tân</option>
+                            <option value="trainer" {% if user.role == 'trainer' %}selected{% endif %}>Huấn luyện viên</option>
+                            <option value="cashier" {% if user.role == 'cashier' %}selected{% endif %}>Thu ngân</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <div>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Đang hoạt động</span>
+                            {% else %}
+                                <span class="badge bg-danger">Đã bị khóa</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

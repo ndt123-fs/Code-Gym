@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Danh sách hội viên</h2>
+    <a href="{{ url_for('reception.register') }}" class="btn btn-primary">Đăng ký hội viên mới</a>
+</div>
+<div class="card">
+    <div class="card-body">
+        {% if members %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Họ tên</th>
+                            <th>Giới tính</th>
+                            <th>Ngày sinh</th>
+                            <th>SĐT</th>
+                            <th>Email</th>
+                            <th>Ngày ĐK</th>
+                            <th>Hạn tập</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                            <tr>
+                                <td>{{ member.full_name }}</td>
+                                <td>{{ member.gender }}</td>
+                                <td>{{ member.dob.strftime('%d/%m/%Y') if member.dob else 'N/A' }}</td>
+                                <td>{{ member.phone }}</td>
+                                <td>{{ member.email }}</td>
+                                <td>{{ member.registration_date.strftime('%d/%m/%Y') }}</td>
+                                <td>{{ member.active_until.strftime('%d/%m/%Y') if member.active_until else 'N/A' }}</td>
+                                <td>
+                                    {% if member.active_until and member.active_until >= today %}
+                                        <span class="badge bg-success">Còn hạn</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Hết hạn</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="mb-0 text-muted">Chưa có hội viên nào được đăng ký.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

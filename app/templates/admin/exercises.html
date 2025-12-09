@@ -1,0 +1,70 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Quản lý bài tập</h2>
+
+<!-- Create Exercise Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Thêm bài tập mới</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.create_exercise') }}">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="name" class="form-label">Tên bài tập</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="body_part" class="form-label">Nhóm cơ</label>
+                    <input type="text" class="form-control" id="body_part" name="body_part" placeholder="VD: Ngực, Lưng, Chân">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="description" class="form-label">Mô tả</label>
+                    <input type="text" class="form-control" id="description" name="description">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Tạo bài tập</button>
+        </form>
+    </div>
+</div>
+
+<!-- Exercise List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Danh sách bài tập</h5>
+    </div>
+    <div class="card-body">
+        {% if exercises %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tên bài tập</th>
+                        <th>Nhóm cơ</th>
+                        <th>Mô tả</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exercise in exercises %}
+                    <tr>
+                        <td>{{ exercise.name }}</td>
+                        <td>{{ exercise.body_part or '-' }}</td>
+                        <td>{{ exercise.description or '-' }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('admin.edit_exercise', id=exercise.id) }}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                            <form method="POST" action="{{ url_for('admin.delete_exercise', id=exercise.id) }}" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa bài tập này?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">Chưa có bài tập nào. Tạo bài tập mới ở trên.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

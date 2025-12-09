@@ -1,0 +1,34 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Chỉnh sửa bài tập</h2>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sửa: {{ exercise.name }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_exercise', id=exercise.id) }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên bài tập</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ exercise.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="body_part" class="form-label">Nhóm cơ</label>
+                        <input type="text" class="form-control" id="body_part" name="body_part" value="{{ exercise.body_part or '' }}" placeholder="VD: Ngực, Lưng, Chân">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ exercise.description or '' }}</textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <a href="{{ url_for('admin.exercises') }}" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

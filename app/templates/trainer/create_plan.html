@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-3">Tạo lịch tập cho {{ member.full_name }}</h2>
+<form method="post">
+    <div class="mb-3">
+        <label for="notes" class="form-label">Ghi chú (tùy chọn)</label>
+        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Hướng dẫn hoặc mục tiêu tổng quát">{{ request.form.notes }}</textarea>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="mb-0">Danh sách bài tập</h4>
+        <button type="button" class="btn btn-outline-primary btn-sm" id="add-row">Thêm bài tập</button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle" id="exercise-table">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" style="width: 30%;">Bài tập</th>
+                    <th scope="col" style="width: 15%;">Số hiệp</th>
+                    <th scope="col" style="width: 20%;">Số lần/hiệp</th>
+                    <th scope="col" style="width: 25%;">Ngày tập</th>
+                    <th scope="col" style="width: 10%;" class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <select class="form-select" name="exercises[]" required>
+                            <option value="" selected disabled>-- Chọn bài tập --</option>
+                            {% for exercise in exercises %}
+                                <option value="{{ exercise.id }}">{{ exercise.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control" name="sets[]" min="1" required>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="reps[]" placeholder="VD: 12-10-8" required>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="schedule_days[]" placeholder="T2, T4, T6" required>
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-sm remove-row">Xóa</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-secondary me-2" href="{{ url_for('trainer.dashboard') }}">Hủy</a>
+        <button type="submit" class="btn btn-success">Lưu lịch tập</button>
+    </div>
+</form>
+
+<script>
+    const tableBody = document.querySelector('#exercise-table tbody');
+    const addRowButton = document.getElementById('add-row');
+
+    function createRow() {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <select class="form-select" name="exercises[]" required>
+                    <option value="" selected disabled>-- Chọn bài tập --</option>
+                    {% for exercise in exercises %}
+                        <option value="{{ exercise.id }}">{{ exercise.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="number" class="form-control" name="sets[]" min="1" required>
+            </td>
+            <td>
+                <input type="text" class="form-control" name="reps[]" placeholder="VD: 12-10-8" required>
+            </td>
+            <td>
+                <input type="text" class="form-control" name="schedule_days[]" placeholder="T2, T4, T6" required>
+            </td>
+            <td class="text-center">
+                <button type="button" class="btn btn-danger btn-sm remove-row">Xóa</button>
+            </td>
+        `;
+        return row;
+    }
+
+    addRowButton.addEventListener('click', () => {
+        tableBody.appendChild(createRow());
+    });
+
+    tableBody.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-row')) {
+            const rows = tableBody.querySelectorAll('tr');
+            if (rows.length > 1) {
+                event.target.closest('tr').remove();
+            }
+        }
+    });
+</script>
+{% endblock %}

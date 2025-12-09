@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Lịch tập của {{ member.full_name }}</h2>
+    <div>
+        <a class="btn btn-primary" href="{{ url_for('trainer.create_plan', member_id=member.id) }}">Tạo lịch mới</a>
+        <a class="btn btn-secondary" href="{{ url_for('trainer.dashboard') }}">Quay lại</a>
+    </div>
+</div>
+
+{% if plans %}
+    {% for plan in plans %}
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between">
+            <span><strong>Lịch tập #{{ plan.id }}</strong> - Tạo ngày: {{ plan.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+            <span class="text-muted">HLV: {{ plan.trainer.username }}</span>
+        </div>
+        <div class="card-body">
+            {% if plan.notes %}
+            <p class="text-muted"><em>Ghi chú: {{ plan.notes }}</em></p>
+            {% endif %}
+            
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>STT</th>
+                        <th>Bài tập</th>
+                        <th>Số hiệp</th>
+                        <th>Số lần/hiệp</th>
+                        <th>Ngày tập</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in plan.workout_details %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ detail.exercise.name }}</td>
+                        <td>{{ detail.sets }}</td>
+                        <td>{{ detail.reps }}</td>
+                        <td>{{ detail.schedule_day }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">
+        Hội viên này chưa có lịch tập nào. <a href="{{ url_for('trainer.create_plan', member_id=member.id) }}">Tạo lịch tập mới</a>
+    </div>
+{% endif %}
+{% endblock %}

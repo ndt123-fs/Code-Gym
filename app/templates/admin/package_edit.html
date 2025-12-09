@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Chỉnh sửa gói tập</h2>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Sửa: {{ package.name }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_package', id=package.id) }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tên gói</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ package.name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="duration_months" class="form-label">Thời hạn (tháng)</label>
+                        <input type="number" class="form-control" id="duration_months" name="duration_months" min="1" value="{{ package.duration_months }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="form-label">Giá (VND)</label>
+                        <input type="number" class="form-control" id="price" name="price" min="0" step="1000" value="{{ package.price | int }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{ package.description or '' }}</textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        <a href="{{ url_for('admin.packages') }}" class="btn btn-secondary">Hủy</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

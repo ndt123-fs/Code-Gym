@@ -1,0 +1,114 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Quản lý nhân viên</h2>
+    <a href="{{ url_for('admin.create_user') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Thêm nhân viên
+    </a>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h5>Tổng nhân viên</h5>
+                <h2>{{ users|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5>Đang hoạt động</h5>
+                <h2>{{ users|selectattr('is_active')|list|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body text-center">
+                <h5>Đã khóa</h5>
+                <h2>{{ users|rejectattr('is_active')|list|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h5>Huấn luyện viên</h5>
+                <h2>{{ users|selectattr('role', 'equalto', 'trainer')|list|length }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên đăng nhập</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.role == 'admin' %}
+                                <span class="badge bg-danger">Quản trị viên</span>
+                            {% elif user.role == 'receptionist' %}
+                                <span class="badge bg-primary">Lễ tân</span>
+                            {% elif user.role == 'trainer' %}
+                                <span class="badge bg-success">Huấn luyện viên</span>
+                            {% elif user.role == 'cashier' %}
+                                <span class="badge bg-warning text-dark">Thu ngân</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ user.role }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Hoạt động</span>
+                            {% else %}
+                                <span class="badge bg-danger">Đã khóa</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.created_at.strftime('%d/%m/%Y') if user.created_at else 'N/A' }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('admin.edit_user', id=user.id) }}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                            {% if user.id != current_user.id %}
+                                <form action="{{ url_for('admin.toggle_user_active', id=user.id) }}" method="post" class="d-inline">
+                                    {% if user.is_active %}
+                                        <button type="submit" class="btn btn-sm btn-outline-warning" onclick="return confirm('Bạn có chắc muốn khóa tài khoản này?')">Khóa</button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Mở khóa</button>
+                                    {% endif %}
+                                </form>
+                                <form action="{{ url_for('admin.delete_user', id=user.id) }}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?')">Xóa</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">Chưa có nhân viên nào</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

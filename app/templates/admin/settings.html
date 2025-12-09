@@ -1,0 +1,28 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Cài đặt hệ thống</h2>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Settings Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Cấu hình lịch tập</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.update_settings') }}">
+                    <div class="mb-3">
+                        <label for="max_training_days" class="form-label">Số ngày tập tối đa mỗi tuần</label>
+                        <input type="number" class="form-control" id="max_training_days" name="max_training_days" 
+                               min="1" max="7" value="{{ max_training_days }}" required>
+                        <div class="form-text">
+                            Huấn luyện viên không thể tạo lịch tập với số ngày vượt quá giá trị này (1-7).
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

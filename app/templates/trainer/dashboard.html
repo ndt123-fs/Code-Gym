@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Quản lý lịch tập</h2>
+</div>
+<p class="text-muted">Danh sách tất cả hội viên. Bạn có thể tạo và quản lý lịch tập cho nhiều hội viên.</p>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Tổng hội viên</h5>
+                <h2>{{ members_data|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Đã có lịch tập</h5>
+                <h2>{{ members_data|selectattr('has_plan')|list|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title">Chưa có lịch tập</h5>
+                <h2>{{ members_data|rejectattr('has_plan')|list|length }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Danh sách hội viên</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Họ tên</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">SĐT</th>
+                    <th scope="col">Trạng thái</th>
+                    <th scope="col">Số lịch tập</th>
+                    <th scope="col" class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in members_data %}
+                    <tr>
+                        <td>{{ item.member.full_name }}</td>
+                        <td>{{ item.member.email }}</td>
+                        <td>{{ item.member.phone }}</td>
+                        <td>
+                            {% if item.member.active_until and item.member.active_until >= today %}
+                                <span class="badge bg-success">Còn hạn</span>
+                            {% else %}
+                                <span class="badge bg-danger">Hết hạn</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.plan_count > 0 %}
+                                <span class="badge bg-info">{{ item.plan_count }} lịch</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Chưa có</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if item.plan_count > 0 %}
+                                <a class="btn btn-info btn-sm" href="{{ url_for('trainer.view_plans', member_id=item.member.id) }}">Xem lịch</a>
+                            {% endif %}
+                            <a class="btn btn-primary btn-sm" href="{{ url_for('trainer.create_plan', member_id=item.member.id) }}">Tạo lịch mới</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Chưa có hội viên nào.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

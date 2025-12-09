@@ -1,0 +1,76 @@
+{% extends "admin/base_admin.html" %}
+{% block admin_content %}
+<h2 class="mb-4">Quản lý gói tập</h2>
+
+<!-- Create Package Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Thêm gói tập mới</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.create_package') }}">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="name" class="form-label">Tên gói</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <label for="duration_months" class="form-label">Thời hạn (tháng)</label>
+                    <input type="number" class="form-control" id="duration_months" name="duration_months" min="1" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="price" class="form-label">Giá (VND)</label>
+                    <input type="number" class="form-control" id="price" name="price" min="0" step="1000" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="description" class="form-label">Mô tả</label>
+                    <input type="text" class="form-control" id="description" name="description">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Tạo gói tập</button>
+        </form>
+    </div>
+</div>
+
+<!-- Package List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Danh sách gói tập</h5>
+    </div>
+    <div class="card-body">
+        {% if packages %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Tên gói</th>
+                        <th>Thời hạn</th>
+                        <th>Giá</th>
+                        <th>Mô tả</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for package in packages %}
+                    <tr>
+                        <td>{{ package.name }}</td>
+                        <td>{{ package.duration_months }} tháng</td>
+                        <td>{{ package.price | format_vnd }}</td>
+                        <td>{{ package.description or '-' }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('admin.edit_package', id=package.id) }}" class="btn btn-sm btn-outline-primary">Sửa</a>
+                            <form method="POST" action="{{ url_for('admin.delete_package', id=package.id) }}" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa gói tập này?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">Chưa có gói tập nào. Tạo gói tập mới ở trên.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
